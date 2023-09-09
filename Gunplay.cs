@@ -9,6 +9,7 @@ public class Gunplay : MonoBehaviour
     public bool shooting = false;
     public ParticleSystem muzzleFlash;
     public ParticleSystem muzzleFlashTrail;
+    public ParticleSystem bullet;
     public Light light;
     // Start is called before the first frame update
     void Start()
@@ -19,8 +20,26 @@ public class Gunplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        attackAnimation();
+    }
+    public void shoot()
+    {
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit))
+        {
+            if (hit.transform.tag == "Respawn")
+            {
+                hit.transform.GetComponent<DestructionScrpt>().destruction.GetComponent<ParticleSystem>().Play();
+                hit.transform.GetComponent<DestructionScrpt>().destroy = true;
+            }
+        }
+    }
+    public void attackAnimation()
+    {
         if (Input.GetMouseButtonDown(0) && !shooting)
         {
+            shoot();
             shooting = true;
             gunAnim.SetTrigger("Fire");
             muzzleFlash.Play();
